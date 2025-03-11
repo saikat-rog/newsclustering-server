@@ -10,11 +10,7 @@ tokenizer = BertTokenizer.from_pretrained(MODEL_NAME)
 bert_model = BertModel.from_pretrained(MODEL_NAME)
 bert_model.eval()
 
-CATEGORIES = ["Economy", "International Affairs", "Politics", "Society", "Environment",
-              "Courts and Crime", "Sports", "Health", "Lifestyle", "Technology",
-              "Culture", "Editorial", "Opinion", "Entertainment", "Transport",
-              "Marketing", "Business", "Travel", "Food", "Education", "Science",
-              "Media", "Human Interest", "Government"]
+CATEGORIES = ["Politics", "Business & Economy", "Technology", "Sports", "Entertainment", "Science & Health", "Crime & Law", "Education", "Environment", "International News", "Lifestyle & Fashion", "Editorial & Opinion", "Local & Regional News", "Obituaries", "Automobiles"]
 
 def get_bert_embedding(text):
     inputs = tokenizer(text, padding="max_length", truncation=True, max_length=512, return_tensors="pt")

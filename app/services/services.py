@@ -35,11 +35,11 @@ def generate_clustering_metrics(text):
     if np.var(embeddings) < 1e-5:
         return "Error: Low variance in embeddings."
 
-    n_components = min(24, embeddings.shape[0] - 1, embeddings.shape[1])
+    n_components = min(15, embeddings.shape[0] - 1, embeddings.shape[1])
     pca = PCA(n_components=n_components)
     reduced_embeddings = pca.fit_transform(embeddings)
 
-    n_clusters = min(12, reduced_embeddings.shape[0] - 1)
+    n_clusters = min(7, reduced_embeddings.shape[0] - 1)
 
     kmeans = KMeans(n_clusters=n_clusters, random_state=42, n_init=10).fit(reduced_embeddings)
     agnes = AgglomerativeClustering(n_clusters=n_clusters, linkage="ward").fit(reduced_embeddings)
