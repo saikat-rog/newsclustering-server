@@ -5,7 +5,7 @@ app = create_app()
 
 @app.route("/")
 def welcome():
-    return "bro this is fun of news"
+    return "bro this is fun of news!"
 
 if __name__ == "__main__":
     port = int(os.getenv("PORT", 5000))
