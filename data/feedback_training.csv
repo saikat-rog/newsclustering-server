@@ -1,0 +1,7 @@
+preferred_algorithm,all_algorithms,Meaning
+KMeans,FALSE,
+GMM,FALSE,
+AGNES,FALSE,
+Spectral,FALSE,
+2025-04-08T21:13:04.722399,False,KMeans
+2025-04-08T21:18:16.650987,True,

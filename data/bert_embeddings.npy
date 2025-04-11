@@ -1,0 +1,22 @@
+from newspaper import Article
+from sentence_transformers import SentenceTransformer
+import numpy as np
+import sys
+
+def extract_text(url):
+    article = Article(url)
+    article.download()
+    article.parse()
+    return article.text
+
+def generate_and_save_embedding(url, output_path="data/bert_embeddings.npy"):
+    model = SentenceTransformer('all-MiniLM-L6-v2')
+    text = extract_text(url)
+    embedding = model.encode([text])  # Returns (1,768) array
+    np.save(output_path, embedding)
+    print(f" Embedding saved to {output_path}")
+
+# Example usage
+if __name__ == "__main__":
+    url = "https://example.com/news/article"  # Replace this or pass via sys.argv
+    generate_and_save_embedding(url)
