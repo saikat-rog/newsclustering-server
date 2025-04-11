@@ -2,6 +2,7 @@ import requests
 from newspaper import Article
 from sentence_transformers import SentenceTransformer
 from sklearn.cluster import KMeans, AgglomerativeClustering, SpectralClustering
+from sklearn.metrics import silhouette_score, calinski_harabasz_score, davies_bouldin_score
 from sklearn.mixture import GaussianMixture
 from collections import Counter, defaultdict
 from transformers import pipeline
@@ -37,7 +38,7 @@ def extract_text_from_url(url):
 
 def summarize_text(text):
     try:
-        summary = summarizer(text, max_length=50, min_length=25, do_sample=False)
+        summary = summarizer(text, max_length=100, min_length=50, do_sample=False)
         return summary[0]['summary_text']
     except:
         return text[:150]  # fallback
@@ -103,6 +104,18 @@ def generate_clustering_metrics(text):
     }
 
     metrics = {}
+    for name, labels in labels.items():
+        if len(set(labels)) > 1:  # Need at least 2 clusters to compute metrics
+            metrics[name] = {
+                "Silhouette Score": silhouette_score(reduced_embeddings, labels),
+                "CH Index": calinski_harabasz_score(reduced_embeddings, labels),
+                "DB Index": davies_bouldin_score(reduced_embeddings, labels)
+            }
+        else:
+            metrics[name] = "Insufficient clusters for metric calculation."
+            
+    return metrics
+    
 
 def generate_trend_data(clusterings, sentiments):
     trend_data = {}
