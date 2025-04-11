@@ -36,9 +36,18 @@ def extract_text_from_url(url):
     except Exception as e:
         return f"Error extracting text: {str(e)}"
 
+def safe_summarize(text):
+    word_count = len(text.split())
+    max_len = max(20, int(word_count * 0.4))
+    min_len = max(10, int(word_count * 0.2))
+    try:
+        return summarizer(text, max_length=max_len, min_length=min_len, do_sample=False)[0]['summary_text']
+    except:
+        return text[:150]
+
 def summarize_text(text):
     try:
-        summary = summarizer(text, max_length=100, min_length=50, do_sample=False)
+        summary = safe_summarize(text)
         return summary[0]['summary_text']
     except:
         return text[:150]  # fallback
@@ -116,7 +125,6 @@ def generate_clustering_metrics(text):
             
     return metrics
     
-
 def generate_trend_data(clusterings, sentiments):
     trend_data = {}
     for algo_name, clusters in clusterings.items():
@@ -131,6 +139,7 @@ def generate_trend_data(clusterings, sentiments):
 def analyze_news_by_country(country_code):
     articles = fetch_news_by_country(country_code)
     contents = [a.get("content", "") for a in articles if a.get("content")]
+    print(contents)
 
     if not contents:
         return {"error": "No news content found for this country."}
