@@ -160,5 +160,7 @@ def analyze_news_by_country(country_code):
             "url": url
         })
         
-    return country_wise_news
+    return {
+        "articles": country_wise_news
+    }
 
