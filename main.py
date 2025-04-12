@@ -1,4 +1,4 @@
-from services.config import create_app
+from app.services.config import create_app
 import os
 
 app = create_app()
