@@ -82,29 +82,15 @@ def summarize_text(text, sentence_count=5):
         print (f"Error summarizing text: {str(e)}")
         return f"Error summarizing text: {str(e)}"
     
-def perform_all_clusterings(texts, n_clusters=4):
-    embeddings = [get_bert_embedding(t) for t in texts]
-
-    # Clustering
-    kmeans_labels = KMeans(n_clusters=n_clusters).fit_predict(embeddings)
-    gmm_labels = GaussianMixture(n_components=n_clusters).fit_predict(embeddings)
-    agnes_labels = AgglomerativeClustering(n_clusters=n_clusters).fit_predict(embeddings)
-    spectral_labels = SpectralClustering(n_clusters=n_clusters, affinity='nearest_neighbors').fit_predict(embeddings)
-
-    # Organize cluster text
-    cluster_results = {}
-    for name, labels in zip(["kmeans", "gmm", "agnes", "spectral"], [kmeans_labels, gmm_labels, agnes_labels, spectral_labels]):
-        clusters = [
-            {
-                "text": t[:100],
-                "cluster": int(label),
-                "summary": summarize_text(t),
-                "category": f"Cluster {label}"
-            } for t, label in zip(texts, labels)
-        ]
-        cluster_results[name] = clusters
-
-    return cluster_results
+def perform_all_clusterings(texts):
+    all_metrics = {}
+    for idx, text in enumerate(texts[:10]):
+        metrics = generate_clustering_metrics(text)
+        all_metrics[f"article_{idx+1}"] = {
+            "text": text,
+            "metrics": metrics
+        }
+    return all_metrics
 
 def analyze_sentiments(texts):
     results = sentiment_analyzer(texts)
@@ -170,7 +156,7 @@ def generate_clustering_metrics(text):
             }
     return metrics
 
-def generate_trend_data(clusterings, sentiments):
+def generate_trend_data(clusterings):
     trend_data = {}
     for algo_name, clusters in clusterings.items():
         cluster_counts = Counter([item["cluster"] for item in clusters])
@@ -179,17 +165,15 @@ def generate_trend_data(clusterings, sentiments):
 def analyze_news_by_country(country_code):
     articles = fetch_news_by_country(country_code)
     contents = [a.get("content", "") for a in articles if a.get("content")]
-    print(contents)
 
     if not contents:
         return {"error": "No news content found for this country."}
 
     clusterings = perform_all_clusterings(contents)
     sentiments = analyze_sentiments(contents)
-    trends = generate_trend_data(clusterings, sentiments)
 
+    # Removed generate_trend_data
     return {
         "clusters": clusterings,
-        "sentiments": sentiments,
-        "trends": trends
+        "sentiments": sentiments
     }

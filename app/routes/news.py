@@ -58,6 +58,7 @@ def getnewsbycountry():
 
         country = data["country"]
         response = analyze_news_by_country(country)
+        response = convert_numpy(response)
         
         # if response.startswith("Error"):
         #     return jsonify({"error": response}), 400
