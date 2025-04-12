@@ -6,7 +6,7 @@ from sklearn.metrics import silhouette_score, calinski_harabasz_score, davies_bo
 from sklearn.mixture import GaussianMixture
 from collections import Counter, defaultdict
 from transformers import pipeline
-from app.models.models import get_bert_embedding, CATEGORIES
+from app.models.models import  CATEGORIES
 from sklearn.decomposition import PCA
 from app.services.config import NEWS_API_KEY
 from app.models.models import sentiment_analyzer
@@ -19,8 +19,6 @@ import numpy as np
 # Load BERT model for embedding
 MODEL_NAME = 'sentence-transformers/all-MiniLM-L6-v2'
 bert_model = SentenceTransformer(MODEL_NAME)
-sentiment_analyzer = pipeline("sentiment-analysis")
-summarizer = pipeline("summarization")
 
 def fetch_news_by_country(country_code, page_size=30):
     url = f'https://newsapi.org/v2/top-headlines?country={country_code}&pageSize={page_size}&apiKey={NEWS_API_KEY}'
@@ -51,8 +49,8 @@ def fetch_news_by_country(country_code, page_size=30):
 
     return articles
 
-# def get_bert_embedding(text):
-#     return bert_model.encode(text)
+def get_bert_embedding(text):
+    return bert_model.encode(text)
 
 def extract_text_from_url(url):
     try:
@@ -81,16 +79,6 @@ def summarize_text(text, sentence_count=5):
     except Exception as e:
         print (f"Error summarizing text: {str(e)}")
         return f"Error summarizing text: {str(e)}"
-    
-def perform_all_clusterings(texts):
-    all_metrics = {}
-    for idx, text in enumerate(texts[:10]):
-        metrics = generate_clustering_metrics(text)
-        all_metrics[f"article_{idx+1}"] = {
-            "text": text,
-            "metrics": metrics
-        }
-    return all_metrics
 
 def analyze_sentiments(texts):
     results = sentiment_analyzer(texts)
@@ -155,25 +143,21 @@ def generate_clustering_metrics(text):
                 "CH Index": 0
             }
     return metrics
-
-def generate_trend_data(clusterings):
-    trend_data = {}
-    for algo_name, clusters in clusterings.items():
-        cluster_counts = Counter([item["cluster"] for item in clusters])
-        trend_data[f"{algo_name}_distribution"] = dict(cluster_counts)
         
 def analyze_news_by_country(country_code):
     articles = fetch_news_by_country(country_code)
-    contents = [a.get("content", "") for a in articles if a.get("content")]
+    urls = [a.get("url", "") for a in articles if a.get("url")]
+    titles = [a.get("title", "") for a in articles if a.get("title")]
 
-    if not contents:
-        return {"error": "No news content found for this country."}
-
-    clusterings = perform_all_clusterings(contents)
-    sentiments = analyze_sentiments(contents)
-
-    # Removed generate_trend_data
-    return {
-        "clusters": clusterings,
-        "sentiments": sentiments
-    }
+    if not urls and not titles:
+        return {"error": "No news found for this country."}
+    
+    country_wise_news = {}
+    for idx, url in enumerate(urls):
+        text = extract_text_from_url(url)
+        country_wise_news[f"article_{idx+1}"] = {
+            "title": titles[idx],
+            "url": url
+        }
+        
+    return country_wise_news
