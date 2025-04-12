@@ -63,9 +63,7 @@ def getnewsbycountry():
         # if response.startswith("Error"):
         #     return jsonify({"error": response}), 400
 
-        return jsonify({
-            "response": response
-        })
+        return response
 
     except Exception as e:
         return jsonify({"error": f"Internal server error: {str(e)}"}), 500

@@ -152,12 +152,13 @@ def analyze_news_by_country(country_code):
     if not urls and not titles:
         return {"error": "No news found for this country."}
     
-    country_wise_news = {}
+    country_wise_news = []
     for idx, url in enumerate(urls):
         text = extract_text_from_url(url)
-        country_wise_news[f"article_{idx+1}"] = {
+        country_wise_news.append({
             "title": titles[idx],
             "url": url
-        }
+        })
         
     return country_wise_news
+
