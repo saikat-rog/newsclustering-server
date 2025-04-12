@@ -4,7 +4,7 @@ import os
 
 NEWS_API_KEY = os.getenv("NEWS_API_KEY")
 
-load_dotenv()
+load_dotenv(dotenv_path='.env', override=True)
 
 def create_app():
     app = Flask(__name__)

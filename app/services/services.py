@@ -27,6 +27,7 @@ def fetch_news_by_country(country_code, page_size=30):
 
     # Debugging output
     print(f"[DEBUG] NewsAPI response for {country_code}: {data}")
+    print(f"[DEBUG] NEWS_API_KEY: {NEWS_API_KEY}")
 
     # Check if NewsAPI returned an error
     if data.get("status") != "ok":
@@ -159,7 +160,7 @@ def analyze_news_by_country(country_code):
             "title": titles[idx],
             "url": url
         })
-        
+    
     return {
         "articles": country_wise_news
     }
